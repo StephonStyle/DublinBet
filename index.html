@@ -250,6 +250,7 @@ body {
 <div id="tabBill" class="content"><div id="billContent"></div></div>
 <div id="tabRank" class="content"><div id="rankContent"></div></div>
 <div id="tabDebt" class="content"><div id="debtContent"></div></div>
+<div id="tabGroupRank" class="content"><div id="groupRankContent"></div></div>
 
 <input type="file" id="avatarUpload" accept="image/*" style="display:none">
 <div class="modal-overlay" id="userModal">
@@ -260,6 +261,7 @@ body {
 <div class="tabs">
   <button class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
+  <button class="tab" data-tab="GroupRank"><span class="icon">📊</span><span>排名</span></button>
   <button class="tab" data-tab="Bill"><span class="icon">💰</span><span>账单</span></button>
   <button class="tab" data-tab="Rank"><span class="icon">🏆</span><span>排行榜</span></button>
   <button class="tab" data-tab="Debt"><span class="icon">📋</span><span>结算</span></button>
@@ -331,10 +333,38 @@ const TEAMS = {
   英格兰:['🏴󠁧󠁢󠁥󠁮󠁧󠁿','英格兰'],西班牙:['🇪🇸','西班牙'],葡萄牙:['🇵🇹','葡萄牙'],荷兰:['🇳🇱','荷兰'],
   弗赖堡:['🦅','弗赖堡'],巴列卡诺:['🔴','巴列卡诺'],
 };
-function te(n){return TEAMS[n]?.[0]||'⚽'}
+function te(n){if(WC_GROUPS[n])return WC_GROUPS[n]+'组';return TEAMS[n]?.[0]||'⚽'}
 function ts(n){return TEAMS[n]?.[1]||n}
 const AVATAR_MAP={'Stephon':'S','Sam':'S','一鸣':'鸣'};
 function ac(n){return AVATAR_MAP[n]||n[0]}
+const WC_GROUPS={
+  '墨西哥':'A','南非':'A','韩国':'A','捷克':'A',
+  '加拿大':'B','波黑':'B','卡塔尔':'B','瑞士':'B',
+  '巴西':'C','摩洛哥':'C','海地':'C','苏格兰':'C',
+  '美国':'D','巴拉圭':'D','澳大利亚':'D','土耳其':'D',
+  '德国':'E','库拉索':'E','科特迪瓦':'E','厄瓜多尔':'E',
+  '荷兰':'F','日本':'F','瑞典':'F','突尼斯':'F',
+  '西班牙':'G','佛得角':'G','比利时':'G','埃及':'G',
+  '沙特阿拉伯':'H','乌拉圭':'H','伊朗':'H','新西兰':'H',
+  '法国':'I','塞内加尔':'I','伊拉克':'I','挪威':'I',
+  '阿根廷':'J','阿尔及利亚':'J','奥地利':'J','约旦':'J',
+  '葡萄牙':'K','刚果(金)':'K','英格兰':'K','克罗地亚':'K',
+  '加纳':'L','巴拿马':'L','乌兹别克斯坦':'L','哥伦比亚':'L'
+};
+const WC_EN={
+  '墨西哥':'Mexico','南非':'South Africa','韩国':'South Korea','捷克':'Czechia',
+  '加拿大':'Canada','波黑':'Bosnia','卡塔尔':'Qatar','瑞士':'Switzerland',
+  '巴西':'Brazil','摩洛哥':'Morocco','海地':'Haiti','苏格兰':'Scotland',
+  '美国':'USA','巴拉圭':'Paraguay','澳大利亚':'Australia','土耳其':'Turkey',
+  '德国':'Germany','库拉索':'Curacao','科特迪瓦':'Ivory Coast','厄瓜多尔':'Ecuador',
+  '荷兰':'Netherlands','日本':'Japan','瑞典':'Sweden','突尼斯':'Tunisia',
+  '西班牙':'Spain','佛得角':'Cape Verde','比利时':'Belgium','埃及':'Egypt',
+  '沙特阿拉伯':'Saudi Arabia','乌拉圭':'Uruguay','伊朗':'Iran','新西兰':'New Zealand',
+  '法国':'France','塞内加尔':'Senegal','伊拉克':'Iraq','挪威':'Norway',
+  '阿根廷':'Argentina','阿尔及利亚':'Algeria','奥地利':'Austria','约旦':'Jordan',
+  '葡萄牙':'Portugal','刚果(金)':'DR Congo','英格兰':'England','克罗地亚':'Croatia',
+  '加纳':'Ghana','巴拿马':'Panama','乌兹别克斯坦':'Uzbekistan','哥伦比亚':'Colombia'
+};
 
 // ======================== STATE ========================
 let M=[], P=[], L=[];
@@ -684,7 +714,7 @@ function renderDebt(){
   el.innerHTML=`<div style="font-size:13px;font-weight:600;margin:0 0 10px 4px;">📋 结算概况</div><div class="debt-summary"><div class="debt-box"><div class="label">✅ 已结算场次</div><div class="value" style="color:var(--primary);">${sc}</div></div><div class="debt-box"><div class="label">💤 流局场次</div><div class="value" style="color:var(--text2);">${vc}</div></div></div><div style="font-size:13px;font-weight:600;margin:14px 0 8px 4px;">🔄 结算关系</div>${dh}<div style="font-size:13px;font-weight:600;margin:14px 0 8px 4px;">📜 结算记录</div>${lh}`;
 }
 
-function renderAll(){renderMatches();renderBill();renderRank();renderDebt();renderPast();updateUI();}
+function renderAll(){renderMatches();renderBill();renderRank();renderDebt();renderPast();renderGroupRank();updateUI();}
 
 // ======================== ACTIONS ========================
 async function submitPred(mid){
@@ -887,6 +917,137 @@ function startPoll(){
       if(!loaded) document.getElementById('matchList').innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p style="color:var(--red);font-size:12px;">加载失败: '+e.message+'</p></div>';
     }
   }, 8000);
+}
+
+// ======================== WORLD CUP GROUP RANKINGS ========================
+function calcGroupStandings(){
+  const st={}; Object.keys(WC_GROUPS).forEach(t=>{
+    const g=WC_GROUPS[t]; if(!st[g]) st[g]=[];
+    st[g].push({team:t,w:0,d:0,l:0,gf:0,ga:0,pts:0,mp:0});
+  });
+  M.forEach(m=>{
+    if(m.league!=='世界杯'||m.home_score==null||m.away_score==null) return;
+    const hg=WC_GROUPS[m.home],ag=WC_GROUPS[m.away];
+    if(!hg||!ag||hg!==ag) return;
+    const h=st[hg].find(t=>t.team===m.home);
+    const a=st[hg].find(t=>t.team===m.away);
+    if(!h||!a) return;
+    h.mp++;a.mp++;h.gf+=m.home_score;h.ga+=m.away_score;
+    a.gf+=m.away_score;a.ga+=m.home_score;
+    if(m.home_score>m.away_score){h.w++;h.pts+=3;a.l++;}
+    else if(m.home_score<m.away_score){a.w++;a.pts+=3;h.l++;}
+    else{h.d++;a.d++;h.pts++;a.pts++;}
+  });
+  Object.keys(st).forEach(g=>{
+    const gm=M.filter(m=>m.league==='世界杯'&&m.home_score!=null&&WC_GROUPS[m.home]===g&&WC_GROUPS[m.away]===g);
+    st[g].sort((a,b)=>{
+      if(b.pts!==a.pts) return b.pts-a.pts;
+      const gda=a.gf-a.ga,gdb=b.gf-b.ga;
+      if(gdb!==gda) return gdb-gda;
+      if(b.gf!==a.gf) return b.gf-a.gf;
+      const hm=gm.find(m=>(m.home===a.team&&m.away===b.team)||(m.home===b.team&&m.away===a.team));
+      if(hm){
+        const pa=hm.home===a.team?(hm.home_score>hm.away_score?3:hm.home_score===hm.away_score?1:0):(hm.away_score>hm.home_score?3:hm.away_score===hm.home_score?1:0);
+        const pb=hm.home===b.team?(hm.home_score>hm.away_score?3:hm.home_score===hm.away_score?1:0):(hm.away_score>hm.home_score?3:hm.away_score===hm.home_score?1:0);
+        if(pb!==pa) return pb-pa;
+        const hgda=hm.home===a.team?hm.home_score-hm.away_score:hm.away_score-hm.home_score;
+        const hgdb=hm.home===b.team?hm.home_score-hm.away_score:hm.away_score-hm.home_score;
+        if(hgdb!==hgda) return hgdb-hgda;
+        const hgfa=hm.home===a.team?hm.home_score:hm.away_score;
+        const hgfb=hm.home===b.team?hm.home_score:hm.away_score;
+        if(hgfb!==hgfa) return hgfb-hgfa;
+      }
+      const ea=WC_EN[a.team]||a.team,eb=WC_EN[b.team]||b.team;
+      return ea.localeCompare(eb);
+    });
+    st[g].forEach((t,i)=>t.r=i+1);
+  });
+  return st;
+}
+
+function renderGroupRank(){
+  const el=document.getElementById('groupRankContent'); if(!loaded){el.innerHTML='<div class="loading"><div class="spin"></div><p>加载中...</p></div>';return;}
+  const st=calcGroupStandings(); const gl=Object.keys(st).sort();
+  if(!gl.length||gl.every(g=>st[g].every(t=>t.mp===0))){
+    el.innerHTML='<div class="empty-state"><div class="icon">📊</div><p>暂无比赛成绩<br><span style="font-size:11px;color:var(--text2);">等待管理员录入比分后自动更新</span></p></div>';
+    return;
+  }
+  const u=cu();
+  let html='<div style="font-size:15px;font-weight:700;margin:0 0 12px 4px;">🏆 世界杯小组排名</div>';
+  // Group tables in responsive grid
+  html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;">';
+  gl.forEach(g=>{
+    const teams=st[g];
+    html+='<div class="match-card" style="padding:12px;overflow-x:auto;"><div style="font-size:14px;font-weight:700;color:var(--gold);margin-bottom:8px;">'+g+'组</div>';
+    html+='<table style="width:100%;border-collapse:collapse;font-size:11px;"><thead><tr style="color:var(--text2);font-size:10px;">';
+    html+='<th style="text-align:center;padding:2px 4px;">#</th><th style="text-align:left;padding:2px 4px;">队</th><th style="text-align:center;padding:2px 4px;">赛</th>';
+    html+='<th style="text-align:center;padding:2px 4px;color:var(--primary);">胜</th><th style="text-align:center;padding:2px 4px;color:var(--text2);">平</th><th style="text-align:center;padding:2px 4px;color:var(--red);">负</th>';
+    html+='<th style="text-align:center;padding:2px 4px;">进</th><th style="text-align:center;padding:2px 4px;">失</th><th style="text-align:center;padding:2px 4px;">净</th>';
+    html+='<th style="text-align:center;padding:2px 4px;color:var(--gold);font-weight:700;">积分</th></tr></thead><tbody>';
+    teams.forEach(t=>{
+      const gd=t.gf-t.ga;
+      const bg=t.r<=2?'var(--primary-dim)':'transparent';
+      const adv=t.r===3?'var(--gold-dim)':'transparent';
+      const rowBg=t.r<=2?bg:t.r===3?adv:'transparent';
+      html+='<tr style="background:'+rowBg+';">';
+      html+='<td style="text-align:center;padding:3px 4px;font-weight:700;">'+t.r+'</td>';
+      html+='<td style="text-align:left;padding:3px 4px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--card2);font-size:10px;font-weight:700;margin-right:4px;">'+WC_GROUPS[t.team]+'</span>'+t.team+'</td>';
+      html+='<td style="text-align:center;padding:3px 4px;">'+t.mp+'</td>';
+      html+='<td style="text-align:center;padding:3px 4px;color:var(--primary);font-weight:600;">'+t.w+'</td>';
+      html+='<td style="text-align:center;padding:3px 4px;">'+t.d+'</td>';
+      html+='<td style="text-align:center;padding:3px 4px;color:var(--red);">'+t.l+'</td>';
+      html+='<td style="text-align:center;padding:3px 4px;font-weight:600;">'+t.gf+'</td>';
+      html+='<td style="text-align:center;padding:3px 4px;">'+t.ga+'</td>';
+      html+='<td style="text-align:center;padding:3px 4px;font-weight:'+(gd>0?700:400)+';color:'+(gd>0?'var(--primary)':gd<0?'var(--red)':'var(--text2)')+';">'+(gd>0?'+':'')+gd+'</td>';
+      html+='<td style="text-align:center;padding:3px 4px;color:var(--gold);font-weight:800;font-size:13px;">'+t.pts+'</td>';
+      html+='</tr>';
+    });
+    html+='</tbody></table></div>';
+  });
+  html+='</div>';
+
+  // Best 3rd-placed teams
+  const third=[];
+  gl.forEach(g=>{
+    const teams=st[g];
+    if(teams.length>=3) third.push({...teams[2],group:g});
+  });
+  third.sort((a,b)=>{
+    if(b.pts!==a.pts) return b.pts-a.pts;
+    const gda=a.gf-a.ga,gdb=b.gf-b.ga;
+    if(gdb!==gda) return gdb-gda;
+    if(b.gf!==a.gf) return b.gf-a.gf;
+    const ea=WC_EN[a.team]||a.team,eb=WC_EN[b.team]||b.team;
+    return ea.localeCompare(eb);
+  });
+  third.forEach((t,i)=>t.r=i+1);
+
+  html+='<div style="font-size:15px;font-weight:700;margin:20px 0 8px 4px;">第三名排名 (前8名出线)</div>';
+  html+='<div class="match-card" style="padding:12px;overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:11px;"><thead><tr style="color:var(--text2);font-size:10px;">';
+  html+='<th style="text-align:center;padding:2px 4px;">#</th><th style="text-align:center;padding:2px 4px;">组</th><th style="text-align:left;padding:2px 4px;">队</th><th style="text-align:center;padding:2px 4px;">赛</th>';
+  html+='<th style="text-align:center;padding:2px 4px;color:var(--primary);">胜</th><th style="text-align:center;padding:2px 4px;color:var(--text2);">平</th><th style="text-align:center;padding:2px 4px;color:var(--red);">负</th>';
+  html+='<th style="text-align:center;padding:2px 4px;">进</th><th style="text-align:center;padding:2px 4px;">失</th><th style="text-align:center;padding:2px 4px;">净</th>';
+  html+='<th style="text-align:center;padding:2px 4px;color:var(--gold);font-weight:700;">积分</th></tr></thead><tbody>';
+  third.forEach(t=>{
+    const gd=t.gf-t.ga;
+    const qual=t.r<=8;
+    const bg=qual?'rgba(0,230,118,0.08)':'transparent';
+    html+='<tr style="background:'+bg+';'+(qual?'font-weight:600;':'')+'">';
+    html+='<td style="text-align:center;padding:3px 4px;font-weight:700;">'+(qual?'<span style="color:var(--primary);">✓</span> ':'')+t.r+'</td>';
+    html+='<td style="text-align:center;padding:3px 4px;font-weight:700;color:var(--gold);">'+t.group+'组</td>';
+    html+='<td style="text-align:left;padding:3px 4px;">'+t.team+'</td>';
+    html+='<td style="text-align:center;padding:3px 4px;">'+t.mp+'</td>';
+    html+='<td style="text-align:center;padding:3px 4px;color:var(--primary);font-weight:600;">'+t.w+'</td>';
+    html+='<td style="text-align:center;padding:3px 4px;">'+t.d+'</td>';
+    html+='<td style="text-align:center;padding:3px 4px;color:var(--red);">'+t.l+'</td>';
+    html+='<td style="text-align:center;padding:3px 4px;font-weight:600;">'+t.gf+'</td>';
+    html+='<td style="text-align:center;padding:3px 4px;">'+t.ga+'</td>';
+    html+='<td style="text-align:center;padding:3px 4px;font-weight:'+(gd>0?700:400)+';color:'+(gd>0?'var(--primary)':gd<0?'var(--red)':'var(--text2)')+';">'+(gd>0?'+':'')+gd+'</td>';
+    html+='<td style="text-align:center;padding:3px 4px;color:var(--gold);font-weight:800;font-size:13px;">'+t.pts+'</td>';
+    html+='</tr>';
+  });
+  html+='</tbody></table></div>';
+  el.innerHTML=html;
 }
 
 // ======================== INIT ========================
