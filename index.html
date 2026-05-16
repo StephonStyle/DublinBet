@@ -104,7 +104,7 @@ body {
 .match-teams { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
 .team { display:flex; align-items:center; gap:8px; flex:1; }
 .team.away { flex-direction:row-reverse; }
-.team .name { font-size:12px; font-weight:600; }
+.team .name { font-size:14px; font-weight:700; }
 .team .logo { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; background:var(--card2); }
 .match-score { font-size:22px; font-weight:800; color:var(--text); text-align:center; min-width:50px; }
 .match-score .vs { font-size:14px; font-weight:400; color:var(--text2); }
@@ -333,7 +333,7 @@ const TEAMS = {
   英格兰:['🏴󠁧󠁢󠁥󠁮󠁧󠁿','英格兰'],西班牙:['🇪🇸','西班牙'],葡萄牙:['🇵🇹','葡萄牙'],荷兰:['🇳🇱','荷兰'],
   弗赖堡:['🦅','弗赖堡'],巴列卡诺:['🔴','巴列卡诺'],
 };
-function te(n){if(WC_GROUPS[n])return WC_GROUPS[n]+'组';return TEAMS[n]?.[0]||'⚽'}
+function te(n){if(WC_GROUPS[n])return '<span style="font-size:10px;color:#9090b0;font-weight:600;">'+WC_GROUPS[n]+'</span>';return TEAMS[n]?.[0]||'⚽'}
 function ts(n){return TEAMS[n]?.[1]||n}
 const AVATAR_MAP={'Stephon':'S','Sam':'S','一鸣':'鸣'};
 function ac(n){return AVATAR_MAP[n]||n[0]}
