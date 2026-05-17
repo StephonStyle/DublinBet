@@ -124,23 +124,8 @@ body{
 }
 .odds-toggle:hover{border-color:var(--gold);color:var(--gold);}
 .odds-toggle.open{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
-.odds-panel{display:none;margin-top:8px;overflow-x:auto;}
+.odds-panel{display:none;margin-top:8px;}
 .odds-panel.open{display:block;}
-.odds-table{width:100%;border-collapse:collapse;font-size:10px;min-width:600px;}
-.odds-table th{background:var(--card2);color:var(--text2);padding:3px 2px;text-align:center;font-weight:600;position:sticky;top:0;z-index:1;}
-.odds-table td{text-align:center;padding:1px 2px;border:1px solid var(--border);}
-.odds-table .section-win td:first-child{color:var(--win);font-weight:600;}
-.odds-table .section-draw td:first-child{color:var(--draw);font-weight:600;}
-.odds-table .section-lose td:first-child{color:var(--lose);font-weight:600;}
-.odds-table .odd-cell input{
-  width:52px;padding:2px 4px;border-radius:4px;
-  border:1px solid var(--border);background:var(--bg);
-  color:var(--gold);font-size:10px;font-weight:600;text-align:center;outline:none;
-}
-.odds-table .odd-cell input:focus{border-color:var(--gold);}
-.odds-table .section-header td{
-  background:var(--card2);font-weight:700;font-size:11px;padding:4px 2px;
-}
 .match-status{font-size:10px;font-weight:600;padding:2px 8px;border-radius:8px;background:var(--card2);}
 .match-status.待预测{color:var(--blue);background:var(--blue-dim);}
 .match-status.进行中{color:var(--red);background:var(--red-dim);animation:pulse 1.5s ease-in-out infinite;}
@@ -247,6 +232,7 @@ body{
   <div class="admin-toggle"><label class="switch"><input type="checkbox" id="adminSwitch"><span class="slider"></span></label><label for="adminSwitch">管理员模式</label></div>
   <div class="admin-panel" id="adminPanel">
     <h3>🛠 管理员面板</h3>
+    <div style="font-size:11px;color:var(--gold);background:var(--gold-dim);border-radius:8px;padding:8px;margin-bottom:12px;">💡 每场比赛上方可设置 <b>胜/平/负赔率</b>，点"📊 比分赔率表"可设置各比分赔率</div>
     <label>联赛</label><select id="addLeague"><option value="英超">🏴󠁧󠁢󠁥󠁮󠁧󠁿 英超</option><option value="西甲">🇪🇸 西甲</option><option value="中超">🇨🇳 中超</option><option value="欧冠">🏆 欧冠</option></select>
     <div class="admin-row"><div><label>主队</label><input id="addHome" placeholder="主队名称"></div><div><label>客队</label><input id="addAway" placeholder="客队名称"></div></div>
     <label>比赛时间</label><input type="datetime-local" id="addDate">
@@ -364,56 +350,32 @@ function getPreds(mid){return P.filter(p=>p.match_id===mid)}
 
 // ======================== ODDS TABLE HTML ========================
 function getOddsTableHTML(mid){
-  // Default values
-  const odds = {win:{},draw:{},lose:{}};
-  const cur = M.find(x=>x.id===mid)?.odds;
-  const o = cur||odds;
-  // For admin editing, we always show inputs. For closed/ended, show values.
-  const isMatchClosed = M.find(x=>x.id===mid)?.settled || M.find(x=>x.id===mid)?.home_score!=null;
-  const isPast = M.find(x=>x.id===mid) && Date.now() > M.find(x=>x.id===mid).date - PREDICT_CUTOFF;
-  const isEnded = isMatchClosed || isPast;
-  const canEdit = isAdmin && !isEnded;
+  const m = M.find(x=>x.id===mid);
+  const o = m?.odds||{win:{},draw:{},lose:{}};
+  const isMatchClosed = m?.settled || m?.home_score!=null;
+  const isPast = m && Date.now() > m.date - PREDICT_CUTOFF;
+  const canEdit = isAdmin && !isMatchClosed && !isPast;
 
-  let html = '<table class="odds-table"><thead>'
-    + '<tr style="background:var(--card2);"><th colspan="2" style="color:var(--win);font-size:11px;padding:4px 2px;">🏠 主胜</th><th colspan="2" style="color:var(--draw);font-size:11px;padding:4px 2px;">🤝 平局</th><th colspan="2" style="color:var(--lose);font-size:11px;padding:4px 2px;">✈️ 客胜</th></tr>'
-    + '<tr><th style="width:60px;">比分</th><th style="width:70px;">赔率</th>'
-    + '<th style="width:60px;">比分</th><th style="width:70px;">赔率</th>'
-    + '<th style="width:60px;">比分</th><th style="width:70px;">赔率</th>'
-    + '</tr></thead><tbody>';
-
-  const maxRows = Math.max(HOME_WIN_SCORES.length, DRAW_SCORES.length, AWAY_WIN_SCORES.length);
-  for(let i=0;i<maxRows;i++){
-    const hs = HOME_WIN_SCORES[i]||'';
-    const ds = DRAW_SCORES[i]||'';
-    const as = AWAY_WIN_SCORES[i]||'';
-    const hv = o.win[hs]||'';
-    const dv = o.draw[ds]||'';
-    const av = o.lose[as]||'';
-    html += '<tr>';
-    // Home win column
-    if(hs){
-      html += '<td style="color:var(--win);font-weight:600;">'+hs+'</td>';
-      html += '<td class="odd-cell">'+(canEdit
-        ? '<input class="ratio-odd" data-mid="'+mid+'" data-type="win" data-score="'+hs+'" value="'+hv+'" placeholder="-" onchange="saveRatioOdds(\''+mid+'\')">'
-        : '<span style="color:var(--gold);font-weight:600;">'+(hv||'-')+'</span>')+'</td>';
-    } else { html += '<td></td><td></td>'; }
-    // Draw column
-    if(ds){
-      html += '<td style="color:var(--draw);font-weight:600;">'+ds+'</td>';
-      html += '<td class="odd-cell">'+(canEdit
-        ? '<input class="ratio-odd" data-mid="'+mid+'" data-type="draw" data-score="'+ds+'" value="'+dv+'" placeholder="-" onchange="saveRatioOdds(\''+mid+'\')">'
-        : '<span style="color:var(--gold);font-weight:600;">'+(dv||'-')+'</span>')+'</td>';
-    } else { html += '<td></td><td></td>'; }
-    // Away win column
-    if(as){
-      html += '<td style="color:var(--lose);font-weight:600;">'+as+'</td>';
-      html += '<td class="odd-cell">'+(canEdit
-        ? '<input class="ratio-odd" data-mid="'+mid+'" data-type="lose" data-score="'+as+'" value="'+av+'" placeholder="-" onchange="saveRatioOdds(\''+mid+'\')">'
-        : '<span style="color:var(--gold);font-weight:600;">'+(av||'-')+'</span>')+'</td>';
-    } else { html += '<td></td><td></td>'; }
-    html += '</tr>';
+  function groupHtml(type, scores, color, label){
+    const inputName = type==='win'?'win':type==='draw'?'draw':'lose';
+    return '<div style="margin-bottom:8px;"><div style="font-size:10px;font-weight:700;color:'+color+';margin-bottom:4px;">'+label+'</div>'
+      + '<div style="display:flex;flex-wrap:wrap;gap:4px;">'
+      + scores.map(function(s){
+          const v = o[inputName]?.[s]||'';
+          return '<span style="display:inline-flex;align-items:center;gap:2px;background:var(--card2);border-radius:4px;padding:1px 4px;font-size:10px;white-space:nowrap;">'
+            + '<span style="color:'+color+';font-weight:600;">'+s+'</span>'
+            + (canEdit
+              ? '<input class="ratio-odd" data-mid="'+mid+'" data-type="'+inputName+'" data-score="'+s+'" value="'+v+'" placeholder="赔率" style="width:36px;padding:1px 2px;border-radius:3px;border:1px solid var(--border);background:var(--bg);color:var(--gold);font-size:9px;font-weight:600;text-align:center;outline:none;" onchange="saveRatioOdds(\''+mid+'\')">'
+              : '<span style="color:var(--gold);font-weight:600;font-size:9px;">'+(v||'-')+'</span>')
+            + '</span>';
+        }).join('')
+      + '</div></div>';
   }
-  html += '</tbody></table>';
+
+  // Generate three groups that stack vertically and wrap
+  var html = groupHtml('win', HOME_WIN_SCORES, 'var(--win)', '🏠 主胜');
+  html += groupHtml('draw', DRAW_SCORES, 'var(--draw)', '🤝 平局');
+  html += groupHtml('lose', AWAY_WIN_SCORES, 'var(--lose)', '✈️ 客胜');
   return html;
 }
 
@@ -471,18 +433,21 @@ function renderMatches(){
     let adminOddsHtml = '';
     if(isAdmin && !m.settled && m.home_score==null){
       const cur = m.odds||{};
-      adminOddsHtml = `<div class="pick-row" style="background:var(--card2);padding:8px;border-radius:10px;margin-top:8px;">
-        <div style="text-align:center;flex:1;">
-          <span style="font-size:11px;color:var(--win);font-weight:600;">胜</span>
-          <input class="odd-input" id="ad_win_${m.id}" value="${cur.main_win||''}" placeholder="赔率" onchange="saveMainOdds('${m.id}')">
-        </div>
-        <div style="text-align:center;flex:1;">
-          <span style="font-size:11px;color:var(--draw);font-weight:600;">平</span>
-          <input class="odd-input" id="ad_draw_${m.id}" value="${cur.main_draw||''}" placeholder="赔率" onchange="saveMainOdds('${m.id}')">
-        </div>
-        <div style="text-align:center;flex:1;">
-          <span style="font-size:11px;color:var(--lose);font-weight:600;">负</span>
-          <input class="odd-input" id="ad_lose_${m.id}" value="${cur.main_lose||''}" placeholder="赔率" onchange="saveMainOdds('${m.id}')">
+      adminOddsHtml = `<div style="background:var(--gold-dim);border:1px solid var(--gold);border-radius:10px;padding:10px;margin-top:8px;">
+        <div style="font-size:10px;color:var(--gold);font-weight:700;margin-bottom:6px;">📝 赛前赔率设置</div>
+        <div class="pick-row" style="gap:6px;">
+          <div style="text-align:center;flex:1;">
+            <span style="display:block;font-size:10px;color:var(--win);font-weight:600;margin-bottom:2px;">🏠 胜</span>
+            <input class="odd-input" id="ad_win_${m.id}" value="${cur.main_win||''}" placeholder="赔率" onchange="saveMainOdds('${m.id}')">
+          </div>
+          <div style="text-align:center;flex:1;">
+            <span style="display:block;font-size:10px;color:var(--draw);font-weight:600;margin-bottom:2px;">🤝 平</span>
+            <input class="odd-input" id="ad_draw_${m.id}" value="${cur.main_draw||''}" placeholder="赔率" onchange="saveMainOdds('${m.id}')">
+          </div>
+          <div style="text-align:center;flex:1;">
+            <span style="display:block;font-size:10px;color:var(--lose);font-weight:600;margin-bottom:2px;">✈️ 负</span>
+            <input class="odd-input" id="ad_lose_${m.id}" value="${cur.main_lose||''}" placeholder="赔率" onchange="saveMainOdds('${m.id}')">
+          </div>
         </div>
       </div>`;
     }
