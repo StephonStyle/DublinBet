@@ -889,9 +889,47 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('userBtn').addEventListener('click',showUserSelect);
   document.getElementById('closeModalBtn').addEventListener('click',()=>document.getElementById('userModal').classList.remove('show'));
   document.getElementById('addMatchBtn').addEventListener('click',addMatch);
-  setInterval(()=>{
-    const saved={};
-    try{loadData();renderAll();}catch(e){}
+  // Preserve UI state across auto-refresh
+  function saveUIState(){
+    return {
+      oddsOpen: Array.from(document.querySelectorAll('.odds-panel.open')).map(function(el){return el.id;}),
+      adminOdds: Array.from(document.querySelectorAll('.odd-input')).map(function(el){return {id:el.id,val:el.value};}),
+      stakeInputs: Array.from(document.querySelectorAll('.stake-input')).map(function(el){return {id:el.id,val:el.value};}),
+      ratioInputs: Array.from(document.querySelectorAll('.ratio-odd')).map(function(el){return {mid:el.dataset.mid,type:el.dataset.type,score:el.dataset.score,val:el.value};}),
+      liveInputs: Array.from(document.querySelectorAll('[id^="lvh_"],[id^="lva_"],[id^="rh_"],[id^="ra_"]')).map(function(el){return {id:el.id,val:el.value};}),
+    };
+  }
+  function restoreUIState(st){
+    if(!st) return;
+    st.oddsOpen.forEach(function(id){
+      var el=document.getElementById(id);
+      if(el) el.classList.add('open');
+      var btn=document.getElementById('ot_'+id.replace('op_',''));
+      if(btn) btn.classList.add('open');
+    });
+    st.adminOdds.forEach(function(item){
+      var el=document.getElementById(item.id);
+      if(el) el.value=item.val;
+    });
+    st.stakeInputs.forEach(function(item){
+      var el=document.getElementById(item.id);
+      if(el) el.value=item.val;
+    });
+    st.ratioInputs.forEach(function(item){
+      document.querySelectorAll('.ratio-odd[data-mid="'+item.mid+'"][data-type="'+item.type+'"][data-score="'+item.score+'"]').forEach(function(el){el.value=item.val;});
+    });
+    st.liveInputs.forEach(function(item){
+      var el=document.getElementById(item.id);
+      if(el) el.value=item.val;
+    });
+  }
+  setInterval(function(){
+    try{
+      var st=saveUIState();
+      loadData();
+      renderAll();
+      restoreUIState(st);
+    }catch(e){}
   },10000);
 });
 </script>
