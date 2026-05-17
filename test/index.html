@@ -335,8 +335,12 @@ function resetData(){
   localStorage.removeItem('dbt_logs');
   M=[];P=[];L=[];
   seedMatches();saveData();
-  renderAll();
-  showToast('✅ 数据已重置');
+  try{
+    renderAll();
+    showToast('✅ 数据已重置');
+  }catch(e){
+    document.getElementById('matchList').innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p style="color:var(--red);font-size:12px;">渲染失败: '+e.message+'<br><span style="font-size:10px;color:var(--text2);">'+e.stack?.split('\n').slice(0,3).join('<br>')+'</span></p></div>';
+  }
 }
 
 function seedMatches(){
