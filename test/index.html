@@ -402,7 +402,7 @@ function getOddsTableHTML(mid){
         : '<span style="color:var(--gold);">'+(o.lose[as]||'-')+'</span>'):'')+'</td>'
       + '</tr>';
   }
-  if(canEdit) html += '<tr><td colspan="6" style="padding:6px 2px;"><button class="btn btn-gold btn-small" onclick="confirmRatioOdds(\''+mid+'\')" style="width:100%;font-size:10px;">✅ 确认比分赔率</button></td></tr>';
+  if(canEdit) html += '<tr><td colspan="6" style="padding:6px 2px;font-size:9px;color:var(--text2);">比分赔率填写后自动保存</td></tr>';
   html += '</table>';
   return html;
 }
@@ -419,14 +419,6 @@ function saveRatioOdds(mid){
   saveData();
 }
 
-function confirmRatioOdds(mid){
-  saveRatioOdds(mid);
-  isAdmin=false;
-  document.getElementById('adminSwitch').checked=false;
-  document.getElementById('adminPanel').classList.remove('show');
-  renderAll();
-  showToast('✅ 比分赔率已保存，已退出管理员模式');
-}
 
 // ======================== RENDER ========================
 function renderMatches(){
@@ -611,6 +603,7 @@ function saveMainOdds(mid){
 
 function confirmOdds(mid){
   saveMainOdds(mid);
+  saveRatioOdds(mid);
   isAdmin=false;
   document.getElementById('adminSwitch').checked=false;
   document.getElementById('adminPanel').classList.remove('show');
