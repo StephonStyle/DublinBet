@@ -304,10 +304,10 @@ function cu(){return (curUser!==null) ? USERS[curUser] : null;}
 
 // generate all score ratios
 const HOME_WIN_SCORES = []; DRAW_SCORES = []; AWAY_WIN_SCORES = [];
-for(let i=0;i<=5;i++) for(let j=0;j<=4;j++){
-  if(i>j && !(i===0&&j===0)) HOME_WIN_SCORES.push(i+':'+j);
-  if(i===j && i<=4) DRAW_SCORES.push(i+':'+j);
-  if(j>i && !(i===0&&j===0)) AWAY_WIN_SCORES.push(i+':'+j);
+for(let i=0;i<=4;i++) for(let j=0;j<=4;j++){
+  if(i>j) HOME_WIN_SCORES.push(i+':'+j);
+  if(i===j) DRAW_SCORES.push(i+':'+j);
+  if(j>i) AWAY_WIN_SCORES.push(i+':'+j);
 }
 const ALL_RATIOS = {win:HOME_WIN_SCORES,draw:DRAW_SCORES,lose:AWAY_WIN_SCORES};
 
@@ -374,8 +374,9 @@ function getOddsTableHTML(mid){
   const isEnded = isMatchClosed || isPast;
   const canEdit = isAdmin && !isEnded;
 
-  let html = '<table class="odds-table"><thead><tr>'
-    + '<th style="width:60px;">比分</th><th style="width:70px;">赔率</th>'
+  let html = '<table class="odds-table"><thead>'
+    + '<tr style="background:var(--card2);"><th colspan="2" style="color:var(--win);font-size:11px;padding:4px 2px;">🏠 主胜</th><th colspan="2" style="color:var(--draw);font-size:11px;padding:4px 2px;">🤝 平局</th><th colspan="2" style="color:var(--lose);font-size:11px;padding:4px 2px;">✈️ 客胜</th></tr>'
+    + '<tr><th style="width:60px;">比分</th><th style="width:70px;">赔率</th>'
     + '<th style="width:60px;">比分</th><th style="width:70px;">赔率</th>'
     + '<th style="width:60px;">比分</th><th style="width:70px;">赔率</th>'
     + '</tr></thead><tbody>';
@@ -388,7 +389,7 @@ function getOddsTableHTML(mid){
     const hv = o.win[hs]||'';
     const dv = o.draw[ds]||'';
     const av = o.lose[as]||'';
-    html += '<tr class="'+(i===0?'section-win ':'')+(hs?'':' style="visibility:hidden;"')+'">';
+    html += '<tr>';
     // Home win column
     if(hs){
       html += '<td style="color:var(--win);font-weight:600;">'+hs+'</td>';
