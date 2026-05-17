@@ -842,11 +842,14 @@ function updateUI(){
 }
 function showToast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2200);}
 function toggleAdmin(){
-  if(!isAdmin&&cu()!=='Stephon'){showToast('只有管理员可以操作');return;}
+  var u=cu();
+  if(!u){showToast('请先选择身份');showUserSelect();return;}
+  if(u!=='Stephon'){showToast('只有 Stephon 可以进入管理员模式');return;}
   isAdmin=!isAdmin;
   document.getElementById('adminSwitch').checked=isAdmin;
   document.getElementById('adminPanel').classList.toggle('show',isAdmin);
   renderAll();
+  showToast(isAdmin?'✅ 管理员模式已开启':'管理员模式已关闭');
 }
 
 function addMatch(){
