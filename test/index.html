@@ -424,7 +424,11 @@ function saveRatioOdds(mid){
 
 function confirmRatioOdds(mid){
   saveRatioOdds(mid);
-  showToast('✅ 比分赔率已保存');
+  isAdmin=false;
+  document.getElementById('adminSwitch').checked=false;
+  document.getElementById('adminPanel').classList.remove('show');
+  renderAll();
+  showToast('✅ 比分赔率已保存，已退出管理员模式');
 }
 
 // ======================== RENDER ========================
@@ -610,7 +614,11 @@ function saveMainOdds(mid){
 
 function confirmOdds(mid){
   saveMainOdds(mid);
-  showToast('✅ 赔率已保存');
+  isAdmin=false;
+  document.getElementById('adminSwitch').checked=false;
+  document.getElementById('adminPanel').classList.remove('show');
+  renderAll();
+  showToast('✅ 赔率已保存，已退出管理员模式');
 }
 
 function toggleOdds(mid){
