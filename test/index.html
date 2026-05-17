@@ -217,7 +217,7 @@ body{
 <body>
 <div class="header">
   <h1>DublinBet <span style="font-size:11px;color:var(--gold);">Test</span></h1>
-  <button class="refresh-btn" id="refreshBtn" onclick="renderAll()">🔄</button>
+  <button class="refresh-btn" id="refreshBtn">🔄</button>
   <button class="user-btn" id="userBtn"><span class="avatar" id="userAvatar">?</span><span id="userName">选择用户</span></button>
   <button class="settings-btn" id="adminBtn" title="管理员模式">⚙</button>
 </div>
@@ -922,20 +922,14 @@ document.addEventListener('DOMContentLoaded',()=>{
       if(el) el.value=item.val;
     });
   }
-  // Detect if user is actively typing in an input
-  function isEditing(){
-    var el = document.activeElement;
-    return el && (el.tagName==='INPUT' || el.tagName==='TEXTAREA');
-  }
-  setInterval(function(){
-    if(isEditing()) return; // skip refresh while user is typing
+  // Manual refresh only — click 🔄 button to refresh data
+  document.getElementById('refreshBtn').addEventListener('click',function(){
     try{
       var st=saveUIState();
       loadData();
-      renderAll();
       restoreUIState(st);
     }catch(e){}
-  },20000);
+  });
 });
 </script>
 </body>
