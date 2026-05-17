@@ -328,7 +328,7 @@ function loadData(){
     loaded=true;
     renderAll();
   }catch(e){
-    try{document.getElementById('matchList').innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p style="color:var(--red);font-size:12px;">加载失败，点下方重置<br><span style="font-size:10px;color:var(--text2);">'+e.message+'</span></p><button class="btn btn-primary" onclick="resetData()" style="margin-top:12px;">🔄 重置数据</button></div>';}catch(e2){}
+    try{document.getElementById('matchList').innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p style="color:var(--red);font-size:12px;">加载失败，点下方重置</p><p style="color:var(--text2);font-size:9px;margin-top:6px;">'+e.message+'</p><button class="btn btn-primary" onclick="resetData()" style="margin-top:12px;">🔄 重置数据</button></div>';}catch(e2){}
   }
 }
 
@@ -602,8 +602,20 @@ function saveMainOdds(mid){
 }
 
 function confirmOdds(mid){
-  saveMainOdds(mid);
-  saveRatioOdds(mid);
+  var m=M.find(function(x){return x.id===mid;});
+  if(!m||!isAdmin) return;
+  if(!m.odds) m.odds={win:{},draw:{},lose:{}};
+  // save main odds
+  m.odds.main_win = parseFloat(document.getElementById('ad_win_'+mid)?.value)||null;
+  m.odds.main_draw = parseFloat(document.getElementById('ad_draw_'+mid)?.value)||null;
+  m.odds.main_lose = parseFloat(document.getElementById('ad_lose_'+mid)?.value)||null;
+  // save ratio odds from DOM
+  document.querySelectorAll('.ratio-odd[data-mid="'+mid+'"]').forEach(function(inp){
+    var t=inp.dataset.type, s=inp.dataset.score;
+    if(inp.value&&parseFloat(inp.value)>0) m.odds[t][s]=parseFloat(inp.value);
+    else delete m.odds[t][s];
+  });
+  saveData();
   isAdmin=false;
   document.getElementById('adminSwitch').checked=false;
   document.getElementById('adminPanel').classList.remove('show');
