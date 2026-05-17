@@ -318,17 +318,17 @@ function saveData(){
 }
 function loadData(){
   try{
-    const m=localStorage.getItem('dbt_matches');
-    const p=localStorage.getItem('dbt_preds');
-    const l=localStorage.getItem('dbt_logs');
-    if(m) try{M=JSON.parse(m);}catch(e){M=[];}
-    if(p) try{P=JSON.parse(p);}catch(e){P=[];}
-    if(l) try{L=JSON.parse(l);}catch(e){L=[];}
-    if(!m||M.length===0){ seedMatches(); saveData(); }
+    var m=localStorage.getItem('dbt_matches');
+    var p=localStorage.getItem('dbt_preds');
+    var l=localStorage.getItem('dbt_logs');
+    if(m){try{M=JSON.parse(m);if(!Array.isArray(M)){M=[];}}catch(e){M=[];}}else{M=[];}
+    if(p){try{P=JSON.parse(p);if(!Array.isArray(P)){P=[];}}catch(e){P=[];}}else{P=[];}
+    if(l){try{L=JSON.parse(l);if(!Array.isArray(L)){L=[];}}catch(e){L=[];}}else{L=[];}
+    if(M.length===0){seedMatches();saveData();}
     loaded=true;
     renderAll();
   }catch(e){
-    document.getElementById('matchList').innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p style="color:var(--red);font-size:12px;">加载失败: '+e.message+'</p><button class="btn btn-primary" onclick="resetData()" style="margin-top:12px;">🔄 重置数据</button></div>';
+    try{document.getElementById('matchList').innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p style="color:var(--red);font-size:12px;">加载失败，点下方重置<br><span style="font-size:10px;color:var(--text2);">'+e.message+'</span></p><button class="btn btn-primary" onclick="resetData()" style="margin-top:12px;">🔄 重置数据</button></div>';}catch(e2){}
   }
 }
 
@@ -338,12 +338,9 @@ function resetData(){
   localStorage.removeItem('dbt_logs');
   M=[];P=[];L=[];
   seedMatches();saveData();
-  try{
-    renderAll();
-    showToast('✅ 数据已重置');
-  }catch(e){
-    document.getElementById('matchList').innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p style="color:var(--red);font-size:12px;">渲染失败: '+e.message+'<br><span style="font-size:10px;color:var(--text2);">'+e.stack?.split('\n').slice(0,3).join('<br>')+'</span></p></div>';
-  }
+  loaded=true;
+  renderAll();
+  showToast('✅ 数据已重置，重新打开即可');
 }
 
 function seedMatches(){
