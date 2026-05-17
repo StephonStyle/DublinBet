@@ -602,25 +602,35 @@ function saveMainOdds(mid){
 }
 
 function confirmOdds(mid){
-  var m=M.find(function(x){return x.id===mid;});
-  if(!m||!isAdmin) return;
-  if(!m.odds) m.odds={win:{},draw:{},lose:{}};
-  // save main odds
-  m.odds.main_win = parseFloat(document.getElementById('ad_win_'+mid)?.value)||null;
-  m.odds.main_draw = parseFloat(document.getElementById('ad_draw_'+mid)?.value)||null;
-  m.odds.main_lose = parseFloat(document.getElementById('ad_lose_'+mid)?.value)||null;
-  // save ratio odds from DOM
-  document.querySelectorAll('.ratio-odd[data-mid="'+mid+'"]').forEach(function(inp){
-    var t=inp.dataset.type, s=inp.dataset.score;
-    if(inp.value&&parseFloat(inp.value)>0) m.odds[t][s]=parseFloat(inp.value);
-    else delete m.odds[t][s];
-  });
-  saveData();
-  isAdmin=false;
-  document.getElementById('adminSwitch').checked=false;
-  document.getElementById('adminPanel').classList.remove('show');
-  renderAll();
-  showToast('✅ 赔率已保存，已退出管理员模式');
+  try {
+    var m=M.find(function(x){return x.id===mid;});
+    if(!m||!isAdmin) return;
+    if(!m.odds) m.odds={win:{},draw:{},lose:{}};
+    // save main odds
+    var w=document.getElementById('ad_win_'+mid);
+    var d=document.getElementById('ad_draw_'+mid);
+    var l=document.getElementById('ad_lose_'+mid);
+    if(w) m.odds.main_win = parseFloat(w.value)||null;
+    if(d) m.odds.main_draw = parseFloat(d.value)||null;
+    if(l) m.odds.main_lose = parseFloat(l.value)||null;
+    // save ratio odds from DOM
+    document.querySelectorAll('.ratio-odd[data-mid="'+mid+'"]').forEach(function(inp){
+      var t=inp.dataset.type, s=inp.dataset.score;
+      if(inp.value&&parseFloat(inp.value)>0) m.odds[t][s]=parseFloat(inp.value);
+      else delete m.odds[t][s];
+    });
+    saveData();
+    isAdmin=false;
+    document.getElementById('adminSwitch').checked=false;
+    document.getElementById('adminPanel').classList.remove('show');
+    // reload from localStorage to ensure clean state
+    loadData();
+    showToast('✅ 赔率已保存');
+  } catch(e) {
+    // worst case: force page reload
+    isAdmin=false;
+    showToast('⚠️ 请下拉刷新页面');
+  }
 }
 
 function toggleOdds(mid){
