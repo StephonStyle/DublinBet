@@ -318,15 +318,25 @@ function loadData(){
     const m=localStorage.getItem('dbt_matches');
     const p=localStorage.getItem('dbt_preds');
     const l=localStorage.getItem('dbt_logs');
-    if(m) M=JSON.parse(m); else M=[];
-    if(p) P=JSON.parse(p); else P=[];
-    if(l) L=JSON.parse(l); else L=[];
-    if(!m||M.length===0){ seedMatches(); }
+    if(m) try{M=JSON.parse(m);}catch(e){M=[];}
+    if(p) try{P=JSON.parse(p);}catch(e){P=[];}
+    if(l) try{L=JSON.parse(l);}catch(e){L=[];}
+    if(!m||M.length===0){ seedMatches(); saveData(); }
     loaded=true;
     renderAll();
   }catch(e){
-    document.getElementById('matchList').innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p style="color:var(--red);font-size:12px;">加载失败</p></div>';
+    document.getElementById('matchList').innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p style="color:var(--red);font-size:12px;">加载失败: '+e.message+'</p><button class="btn btn-primary" onclick="resetData()" style="margin-top:12px;">🔄 重置数据</button></div>';
   }
+}
+
+function resetData(){
+  localStorage.removeItem('dbt_matches');
+  localStorage.removeItem('dbt_preds');
+  localStorage.removeItem('dbt_logs');
+  M=[];P=[];L=[];
+  seedMatches();saveData();
+  renderAll();
+  showToast('✅ 数据已重置');
 }
 
 function seedMatches(){
