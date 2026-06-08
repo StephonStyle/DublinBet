@@ -378,7 +378,7 @@ async function sbPatch(table, data) {
 async function ft(url,opts){return Promise.race([fetch(url,opts),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),15000))]);}
 
 // ======================== CONSTANTS ========================
-const USERS = ['章','Sam','一鸣','王哲','新用户1','新用户2','新用户3','新用户4'];
+const USERS = ['章','Sam','一鸣','王哲','辉','新用户2','新用户3','新用户4'];
 const COLORS = ['#00e676','#448aff','#ffd740','#ff5252','#ab47bc','#26c6da','#ff7043','#7e57c2'];
 const TEAMS = {
   阿森纳:['🎯','阿森纳'],切尔西:['🦁','切尔西'],曼城:['💙','曼城'],利物浦:['🔴','利物浦'],
@@ -403,7 +403,7 @@ const TEAMS = {
 };
 function te(n){return TEAMS[n]?.[0]||'⚽'}
 function ts(n){return TEAMS[n]?.[1]||n}
-const AVATAR_MAP={'章':'章','Sam':'S','一鸣':'一','王哲':'王','新用户1':'1','新用户2':'2','新用户3':'3','新用户4':'4'};
+const AVATAR_MAP={'章':'章','Sam':'S','一鸣':'一','王哲':'王','辉':'辉','新用户2':'2','新用户3':'3','新用户4':'4'};
 function ac(n){return AVATAR_MAP[n]||n[0]}
 
 // ======================== WORLD CUP 2026 ========================
