@@ -326,7 +326,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v1.0.28 · DublinBet</div>
+<div class="footer">© 2026-2030 Stephon · v1.0.20 · DublinBet</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -378,7 +378,7 @@ async function sbPatch(table, data) {
 async function ft(url,opts){return Promise.race([fetch(url,opts),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),15000))]);}
 
 // ======================== CONSTANTS ========================
-const USERS = ['章','Sam','一鸣','王哲','辉','欧狼','新用户3','新用户4'];
+const USERS = ['章','Sam','一鸣','王哲','辉','新用户2','新用户3','新用户4'];
 const COLORS = ['#00e676','#448aff','#ffd740','#ff5252','#ab47bc','#26c6da','#ff7043','#7e57c2'];
 const TEAMS = {
   阿森纳:['🎯','阿森纳'],切尔西:['🦁','切尔西'],曼城:['💙','曼城'],利物浦:['🔴','利物浦'],
@@ -403,7 +403,7 @@ const TEAMS = {
 };
 function te(n){return TEAMS[n]?.[0]||'⚽'}
 function ts(n){return TEAMS[n]?.[1]||n}
-const AVATAR_MAP={'章':'章','Sam':'S','一鸣':'一','王哲':'王','辉':'辉','欧狼':'欧','新用户3':'3','新用户4':'4'};
+const AVATAR_MAP={'章':'章','Sam':'S','一鸣':'一','王哲':'王','辉':'辉','新用户2':'2','新用户3':'3','新用户4':'4'};
 function ac(n){return AVATAR_MAP[n]||n[0]}
 
 // ======================== WORLD CUP 2026 ========================
@@ -1275,18 +1275,18 @@ async function loadData(){
         }
         // Demo 1: Brazil 2-1 Argentina (result=H, stake=20)
         await createDemo('demo_ba','巴西','阿根廷',2,1,new Date('2026-06-05T22:00+08:00').getTime(),20,
-          ['章','Sam','一鸣','王哲','辉','欧狼','新用户3','新用户4'],
+          ['章','Sam','一鸣','王哲','辉','新用户2','新用户3','新用户4'],
           [[2,1],[2,1],[1,1],[0,2],[1,0],[0,0],[2,0],[1,2]],
-          {type:'settled',individual:{章:149.2,Sam:133,一鸣:-40,王哲:-45,辉:49.3,欧狼:-35,新用户3:19.6,新用户4:-30},
-            scoreDetails:{章:{stake:20,odds:3.5,exact:true,payout:70},Sam:{stake:20,odds:3.5,exact:true,payout:70},一鸣:{stake:20,exact:false,payout:-20},王哲:{stake:20,exact:false,payout:-20},辉:{stake:20,exact:false,payout:-20},欧狼:{stake:20,exact:false,payout:-20},新用户3:{stake:20,exact:false,payout:-20},新用户4:{stake:20,exact:false,payout:-20}},
-            wdlDetails:{章:{pick:'H',result:'H',stake:40,odds:1.98,correct:true,payout:79.2},Sam:{pick:'H',result:'H',stake:30,odds:2.1,correct:true,payout:63},一鸣:{pick:'D',result:'H',stake:20,odds:3.0,correct:false,payout:-20},王哲:{pick:'A',result:'H',stake:25,odds:3.5,correct:false,payout:-25},辉:{pick:'H',result:'H',stake:35,odds:1.98,correct:true,payout:69.3},欧狼:{pick:'D',result:'H',stake:15,odds:3.0,correct:false,payout:-15},新用户3:{pick:'H',result:'H',stake:20,odds:1.98,correct:true,payout:39.6},新用户4:{pick:'A',result:'H',stake:10,odds:3.5,correct:false,payout:-10}}});
+          {type:'settled',individual:{章:149.2,Sam:133,一鸣:-40,王哲:-45,辉:49.3,新用户2:-35,新用户3:19.6,新用户4:-30},
+            scoreDetails:{章:{stake:20,odds:3.5,exact:true,payout:70},Sam:{stake:20,odds:3.5,exact:true,payout:70},一鸣:{stake:20,exact:false,payout:-20},王哲:{stake:20,exact:false,payout:-20},辉:{stake:20,exact:false,payout:-20},新用户2:{stake:20,exact:false,payout:-20},新用户3:{stake:20,exact:false,payout:-20},新用户4:{stake:20,exact:false,payout:-20}},
+            wdlDetails:{章:{pick:'H',result:'H',stake:40,odds:1.98,correct:true,payout:79.2},Sam:{pick:'H',result:'H',stake:30,odds:2.1,correct:true,payout:63},一鸣:{pick:'D',result:'H',stake:20,odds:3.0,correct:false,payout:-20},王哲:{pick:'A',result:'H',stake:25,odds:3.5,correct:false,payout:-25},辉:{pick:'H',result:'H',stake:35,odds:1.98,correct:true,payout:69.3},新用户2:{pick:'D',result:'H',stake:15,odds:3.0,correct:false,payout:-15},新用户3:{pick:'H',result:'H',stake:20,odds:1.98,correct:true,payout:39.6},新用户4:{pick:'A',result:'H',stake:10,odds:3.5,correct:false,payout:-10}}});
         // Demo 2: France 0-0 England (result=D, stake=25)
         await createDemo('demo_fe','法国','英格兰',0,0,new Date('2026-06-06T22:00+08:00').getTime(),25,
-          ['章','Sam','一鸣','王哲','辉','欧狼','新用户3','新用户4'],
+          ['章','Sam','一鸣','王哲','辉','新用户2','新用户3','新用户4'],
           [[2,1],[1,0],[0,0],[1,1],[0,0],[0,0],[1,0],[2,1]],
-          {type:'settled',winners:['一鸣','辉','欧狼'],losers:['章','Sam','王哲','新用户3','新用户4'],totalPot:125,
-            individual:{章:-45,Sam:-45,一鸣:185,王哲:20,辉:100,欧狼:170,新用户3:-40,新用户4:-45},
-            scoreDetails:{一鸣:{stake:25,odds:5.0,exact:true,payout:125},辉:{stake:25,odds:5.0,exact:true,payout:125},欧狼:{stake:25,odds:5.0,exact:true,payout:125},章:{stake:25,exact:false,payout:-25},Sam:{stake:25,exact:false,payout:-25},王哲:{stake:25,exact:false,payout:-25},新用户3:{stake:25,exact:false,payout:-25},新用户4:{stake:25,exact:false,payout:-25}},
+          {type:'settled',winners:['一鸣','辉','新用户2'],losers:['章','Sam','王哲','新用户3','新用户4'],totalPot:125,
+            individual:{章:-45,Sam:-45,一鸣:185,王哲:20,辉:100,新用户2:170,新用户3:-40,新用户4:-45},
+            scoreDetails:{一鸣:{stake:25,odds:5.0,exact:true,payout:125},辉:{stake:25,odds:5.0,exact:true,payout:125},新用户2:{stake:25,odds:5.0,exact:true,payout:125},章:{stake:25,exact:false,payout:-25},Sam:{stake:25,exact:false,payout:-25},王哲:{stake:25,exact:false,payout:-25},新用户3:{stake:25,exact:false,payout:-25},新用户4:{stake:25,exact:false,payout:-25}},
             wdlDetails:{章:{pick:'H',result:'D',stake:20,odds:2.0,correct:false,payout:-20},Sam:{pick:'H',result:'D',stake:20,odds:2.0,correct:false,payout:-20},一鸣:{pick:'D',result:'D',stake:20,odds:3.0,correct:true,payout:60},王哲:{pick:'D',result:'D',stake:15,odds:3.0,correct:true,payout:45},辉:{pick:'A',result:'D',stake:25,odds:3.5,correct:false,payout:-25},新用户2:{pick:'D',result:'D',stake:15,odds:3.0,correct:true,payout:45},新用户3:{pick:'H',result:'D',stake:15,odds:2.0,correct:false,payout:-15},新用户4:{pick:'A',result:'D',stake:20,odds:3.5,correct:false,payout:-20}}});
         // Reload data after creating demos
         var dm=await sbGet('matches','?order=date');M=(dm||[]).map(function(m){if(typeof m.settlement==='string')try{m.settlement=JSON.parse(m.settlement);}catch(e){}return m;});
@@ -1366,12 +1366,14 @@ const PAST_CUTOFF = 4 * 60 * 60 * 1000; // 开赛后4小时(含加时+结束1h)�
 
 function renderPast(){
   const el=document.getElementById('pastContent'); if(!loaded) return;
-  let f=[];
+  let f=M.filter(function(m){return m.id&&m.id==='demo_ba';});
   if(!f.length){el.innerHTML='<div class="empty-state"><div class="icon">📜</div><p>暂无历史比赛</p></div>';return;}
-  var lastRound=0,parts2=[];
+  var lastRound=0,parts2=[],demoShown=false;
   f.forEach(function(m){
     var r=getMatchRound(m);
     if(lastRound!==0&&r<lastRound&&ROUND_DIV[lastRound]) parts2.push('<div class="round-divider"><span>'+ROUND_DIV[lastRound]+'</span></div>');
+    lastRound=r;
+    if(!demoShown&&m.id.indexOf('demo_')===0){demoShown=true;parts2.push('<div style="text-align:center;margin:18px 0 12px;position:relative;"><span style="display:inline-block;padding:4px 20px;font-size:12px;font-weight:700;color:var(--text2);background:var(--card2);border-radius:20px;border:1px solid var(--border);letter-spacing:2px;">🎮 演示模拟</span></div>');}
     const st=gs(m);
     const dtStr=new Date(m.date).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit'})+' '+new Date(m.date).toLocaleString([],{weekday:'short'});
     const tmStr=new Date(m.date).toLocaleString([],{hour:'2-digit',minute:'2-digit',hour12:false});
@@ -1859,7 +1861,7 @@ function showPredModal(mid){
   function skHtml(sel,id){
     return '<span class="stake-label" style="font-size:13px;">积分</span><div class="stake-btns" id="'+id+'">'+
       [10,20,30,40,50].map(function(v){return '<span class="stake-btn'+(v===sel?' active':'')+'" data-stake="'+v+'" onclick="selStake(this,'+v+')">'+v+'</span>';}).join('')+
-      '</div><button class="btn btn-primary" onclick="subPredModal()" style="font-size:12px;padding:6px 12px;white-space:nowrap;">提交</button>';
+      '</div>';
   }
   document.getElementById('predModalContent').innerHTML=
     
@@ -1946,9 +1948,6 @@ function showPredModal(mid){
   }
   var scrDiv=document.getElementById('scrResult');
   if(scrDiv){scrDiv.innerHTML='<div style="font-size:13px;color:var(--gold);margin:6px 0;padding:8px;background:var(--card2);border-radius:6px;text-align:center;border:1px solid var(--gold-dim);">✅ 已预测 '+cs+'分 '+score+' <button class="btn btn-small" style="margin-left:8px;font-size:10px;padding:2px 8px;background:var(--red-dim);color:var(--red);" onclick="delPred(\''+mid+'\')">删除</button></div>';}
-  var predDiv=document.getElementById('wdlResult');
-  var p2={'H':'胜','D':'平','A':'负'};
-  if(predDiv&&wdlPick&&wdlSk){predDiv.innerHTML='<div style="font-size:13px;color:var(--gold);margin:6px 0;padding:8px;background:var(--card2);border-radius:6px;text-align:center;border:1px solid var(--gold-dim);">✅ 已预测 '+wdlSk+'分 '+p2[wdlPick]+' <button class="btn btn-small" style="margin-left:8px;font-size:10px;padding:2px 8px;background:var(--red-dim);color:var(--red);" onclick="delPred(\''+mid+'\')">删除</button></div>';}
   renderAll();showToast('✅ 已提交比分预测 '+score);
 }
 function closePredModal(){ 
@@ -1989,8 +1988,6 @@ function subPredModal(){
     var predDiv=document.getElementById('wdlResult');
     var pl={'H':'胜','D':'平','A':'负'};
     if(predDiv&&pick&&sk){predDiv.innerHTML='<div style="font-size:13px;color:var(--gold);margin:6px 0;padding:8px;background:var(--card2);border-radius:6px;text-align:center;border:1px solid var(--gold-dim);">✅ 已预测 '+sk+'分 '+pl[pick]+' <button class="btn btn-small" style="margin-left:8px;font-size:10px;padding:2px 8px;background:var(--red-dim);color:var(--red);" onclick="delPred(\''+mid+'\')">删除</button></div>';}
-    var scrDiv=document.getElementById('scrResult');
-    if(scrDiv&&scrEl){var ss=scrEl.querySelector('.s-lg').textContent;scrDiv.innerHTML='<div style="font-size:13px;color:var(--gold);margin:6px 0;padding:8px;background:var(--card2);border-radius:6px;text-align:center;border:1px solid var(--gold-dim);">✅ 已预测 '+scrSk+'分 '+ss+' <button class="btn btn-small" style="margin-left:8px;font-size:10px;padding:2px 8px;background:var(--red-dim);color:var(--red);" onclick="delPred(\''+mid+'\')">删除</button></div>';}
   }catch(e){showToast('提交失败');}
 }
 const ADMIN_PWD='321';
