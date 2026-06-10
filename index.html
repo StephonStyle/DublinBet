@@ -326,7 +326,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v1.0.12 · DublinBet</div>
+<div class="footer">© 2026-2030 Stephon · v1.0.13 · DublinBet</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1366,9 +1366,7 @@ const PAST_CUTOFF = 4 * 60 * 60 * 1000; // 开赛后4小时(含加时+结束1h)�
 
 function renderPast(){
   const el=document.getElementById('pastContent'); if(!loaded) return;
-  const cutoff=Date.now()-PAST_CUTOFF;
-  let f=M.filter(function(m){return m.date<cutoff||m.settled;});
-  f.sort((a,b)=>b.date-a.date);
+  let f=M.filter(function(m){return m.id&&m.id.indexOf('demo_')===0;});
   if(!f.length){el.innerHTML='<div class="empty-state"><div class="icon">📜</div><p>暂无历史比赛</p></div>';return;}
   var lastRound=0,parts2=[],demoShown=false;
   f.forEach(function(m){
