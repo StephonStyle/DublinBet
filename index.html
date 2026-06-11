@@ -331,7 +331,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.1.2 · DublinBet</div>
+<div class="footer">© 2026-2030 Stephon · v2.1.3 · DublinBet</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -383,8 +383,8 @@ async function sbPatch(table, data) {
 async function ft(url,opts){return Promise.race([fetch(url,opts),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),15000))]);}
 
 // ======================== CONSTANTS ========================
-const USERS = ['章','Sam','一鸣','王哲','辉','欧狼','新用户3','新用户4'];
-const COLORS = ['#00e676','#448aff','#ffd740','#ff5252','#ab47bc','#26c6da','#ff7043','#7e57c2'];
+const USERS = ['章','Sam','一鸣','王哲','辉','欧狼'];
+const COLORS = ['#00e676','#448aff','#ffd740','#ff5252','#ab47bc','#26c6da'];
 const TEAMS = {
   阿森纳:['🎯','阿森纳'],切尔西:['🦁','切尔西'],曼城:['💙','曼城'],利物浦:['🔴','利物浦'],
   曼联:['👹','曼联'],热刺:['🐓','热刺'],纽卡斯尔:['⚫','纽卡斯尔'],维拉:['🟣','阿斯顿维拉'],
@@ -408,7 +408,7 @@ const TEAMS = {
 };
 function te(n){return TEAMS[n]?.[0]||'⚽'}
 function ts(n){return TEAMS[n]?.[1]||n}
-const AVATAR_MAP={'章':'章','Sam':'S','一鸣':'一','王哲':'王','辉':'辉','欧狼':'欧','新用户3':'3','新用户4':'4'};
+const AVATAR_MAP={'章':'章','Sam':'S','一鸣':'一','王哲':'王','辉':'辉','欧狼':'欧'};
 function ac(n){return AVATAR_MAP[n]||n[0]}
 
 // ======================== WORLD CUP 2026 ========================
