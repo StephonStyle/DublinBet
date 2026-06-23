@@ -335,7 +335,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.4.02 · DublinBet</div>
+<div class="footer">© 2026-2030 Stephon · v2.4.03 · DublinBet</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -2286,15 +2286,20 @@ async function showUsage() {
       if (sv && sv.length) {
         sv.forEach(function(e){
           try {
-            const d = JSON.parse(e.detail);
+            const raw = e.detail || e.log || '';
+            if (!raw) return;
+            const d = JSON.parse(raw);
             if (d && d.user) {
               const dk = (d.device||'PC') + '_' + (d.brand||'Unknown').replace(/[^a-zA-Z0-9]/g,'');
               if (!allUsage[d.user]) allUsage[d.user] = {};
               if (!allUsage[d.user][dk]) allUsage[d.user][dk] = {device:d.device||'PC', brand:d.brand||'Unknown', days:{}};
-              if (!allUsage[d.user][dk].days[d.date]) allUsage[d.user][dk].days[d.date] = {visits:0, sessions:[], serverTimes:d.times||[]};
+              if (!allUsage[d.user][dk].days[d.date]) allUsage[d.user][dk].days[d.date] = {visits:0, sessions:[], serverTimes:[]};
               allUsage[d.user][dk].days[d.date].visits = Math.max(allUsage[d.user][dk].days[d.date].visits, d.visits);
-              if (d.times && d.times.length > (allUsage[d.user][dk].days[d.date].serverTimes||[]).length) {
+              if (d.times && d.times.length > 0) {
                 allUsage[d.user][dk].days[d.date].serverTimes = d.times;
+              } else if (d.time) {
+                const t = allUsage[d.user][dk].days[d.date].serverTimes;
+                if (t.indexOf(d.time) < 0) t.push(d.time);
               }
             }
           } catch(ex) {}
