@@ -335,7 +335,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.5.06 · DublinBet</div>
+<div class="footer">© 2026-2030 Stephon · v2.6.03 · DublinBet</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1214,24 +1214,30 @@ async function settleMatch(m){
   });
 
   // === WDL Prediction (odds-based) ===
+  // 从比分预测自动推导WDL（如果用户没明确选胜平负）
   const mr=h>a?'H':h<a?'A':'D';
   const wdlDetails={};
-  ps.filter(p=>p.pick).forEach(p=>{
-    const correct=p.pick===mr;const stk=p.stake||defStake;
-    const odds=p.pick==='H'?(m.odds_h||2.0):p.pick==='D'?(m.odds_d||3.0):(m.odds_a||3.0);
+  ps.forEach(p=>{
+    // 若没有显式WDL但有利分预测，从比分推导（预测主队赢则=H，客队赢=A，平=D）
+    var wdlPick=p.pick;
+    if(!wdlPick&&p.home_score!=null) wdlPick=p.home_score>p.away_score?'H':p.home_score<p.away_score?'A':'D';
+    if(!wdlPick) return;
+    const correct=wdlPick===mr;const stk=p.stake||defStake;
+    const odds=wdlPick==='H'?(m.odds_h||2.0):wdlPick==='D'?(m.odds_d||3.0):(m.odds_a||3.0);
     const payout=correct?Math.round(stk*(odds-1)*10)/10:-stk;
-    wdlDetails[p.user_name]={pick:p.pick,result:mr,stake:stk,odds:Math.round(odds*100)/100,correct,payout};
+    wdlDetails[p.user_name]={pick:wdlPick,result:mr,stake:stk,odds:Math.round(odds*100)/100,correct,payout};
     indv[p.user_name]=(indv[p.user_name]||0)+payout;
   });
 
   // === 未预测扣分 ===
+  // 注：WDL已从比分自动推导，有比分预测就算有WDL，只扣完全没参与的人
   const PENALTY = 20;
   const psSet = new Set(ps.map(p=>p.user_name));
-  const wdlSet = cur.wdlPredictions ? new Set(Object.keys(cur.wdlPredictions)) : new Set();
+  const hasWDLSet = new Set([...ps.filter(p=>p.pick||p.home_score!=null).map(p=>p.user_name),...Object.keys(cur.wdlPredictions||{})]);
   const penalties = {};
   USERS.forEach(u => {
     let pAmt = 0;
-    if (!wdlSet.has(u)) pAmt += PENALTY;
+    if (!hasWDLSet.has(u)) pAmt += PENALTY;
     if (!psSet.has(u)) pAmt += PENALTY;
     if (pAmt) { penalties[u] = pAmt; indv[u] = (indv[u]||0) - pAmt; }
   });
@@ -1447,7 +1453,7 @@ function renderMatches(){
   }); el.innerHTML=parts.join('');
 }
 
-const PAST_CUTOFF = 130 * 60 * 1000; // 2h10min = 开球后2h10min跳历史页，管理员录入比分即结算
+const PAST_CUTOFF = 4 * 60 * 60 * 1000; // 4h = 开球后4小时跳历史页，管理员录入比分即结算
 function getMatchCutoff(m){
   if(m.settlement?.manual_settle) return Infinity;
   if(m.league==='世界杯'){
@@ -1461,7 +1467,7 @@ function getMatchCutoff(m){
 
 function renderPast(){
   const el=document.getElementById('pastContent'); if(!loaded) return;
-  let f=M.filter(function(m){return m.settled||(!m.home_score&&Date.now()-m.date>=getMatchCutoff(m));});
+  let f=M.filter(function(m){return m.settled||(!m.home_score&&Date.now()-m.date>=getMatchCutoff(m))||(m.home_score!=null&&!m.settled);});
   f.sort((a,b)=>b.date-a.date);
   if(!f.length){el.innerHTML='<div class="empty-state"><div class="icon">📜</div><p>暂无历史比赛</p></div>';return;}
   var lastRound=0,parts2=[];
