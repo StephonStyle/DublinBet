@@ -335,7 +335,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.6.05 · DublinBet</div>
+<div class="footer">© 2026-2030 Stephon · v2.6.06 · DublinBet</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1494,8 +1494,8 @@ function renderPast(){
       plHtml='<div style="font-size:11px;color:var(--text2);margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">📊 玩家得失分<div class="pred-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:4px;">'+
         USERS.map(function(nm){
           const w=wdlD[nm],c=scD[nm];const total=indv[nm]||0;const pen=penalties[nm]||0;
-          const wdlTxt=w?(w.correct?'🎯 +'+w.payout.toFixed(1)+' ('+w.stake+'×'+w.odds+')':'❌'+w.payout.toFixed(1)):'未预测';
-          const scTxt=c?(c.exact?(c.odds?'🎯 +'+Number(c.payout).toFixed(1)+' ('+c.stake+'×'+c.odds+')':'🎯+'+Number(c.payout).toFixed(1)):'❌'+Number(c.payout).toFixed(1)):'未预测';
+          const wdlTxt=w?(w.correct?'🎯 +'+w.payout.toFixed(1)+' ('+w.stake+'×'+w.odds+')':'❌'+w.payout.toFixed(1)+' ('+w.stake+'分)') :'未预测';
+          const scTxt=c?(c.exact?(c.odds?'🎯 +'+Number(c.payout).toFixed(1)+' ('+c.stake+'×'+c.odds+')':'🎯+'+Number(c.payout).toFixed(1)):'❌'+Number(c.payout).toFixed(1)+' ('+c.stake+'分)') :'未预测';
           var tClr=total>0?'var(--primary)':total<0?'var(--red)':'var(--text2)';
           var totalTxt=(total>0?'+':'')+total.toFixed(1);
           return '<div style="background:var(--card2);padding:6px 8px;border-radius:6px;">'+
