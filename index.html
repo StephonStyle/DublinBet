@@ -335,7 +335,7 @@ body {
   </div>
 </div>
 
-<div class="footer">© 2026-2030 Stephon · v2.6.03 · DublinBet</div>
+<div class="footer">© 2026-2030 Stephon · v2.6.04 · DublinBet</div>
 <div class="tabs">
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabPast').classList.add('active');this.classList.add('active');renderAll();" class="tab" data-tab="Past"><span class="icon">📜</span><span>历史</span></button>
   <button onclick="document.querySelectorAll('.content,.tab').forEach(function(e){e.classList.remove('active');});document.getElementById('tabMatches').classList.add('active');this.classList.add('active');renderAll();" class="tab active" data-tab="Matches"><span class="icon">⚽</span><span>赛事</span></button>
@@ -1222,7 +1222,9 @@ async function settleMatch(m){
     var wdlPick=p.pick;
     if(!wdlPick&&p.home_score!=null) wdlPick=p.home_score>p.away_score?'H':p.home_score<p.away_score?'A':'D';
     if(!wdlPick) return;
-    const correct=wdlPick===mr;const stk=p.stake||defStake;
+    const correct=wdlPick===mr;
+    const wdlInfo=cur.wdlPredictions&&cur.wdlPredictions[p.user_name];
+    const stk=(wdlInfo&&wdlInfo.stake)||p.stake||defStake;
     const odds=wdlPick==='H'?(m.odds_h||2.0):wdlPick==='D'?(m.odds_d||3.0):(m.odds_a||3.0);
     const payout=correct?Math.round(stk*(odds-1)*10)/10:-stk;
     wdlDetails[p.user_name]={pick:wdlPick,result:mr,stake:stk,odds:Math.round(odds*100)/100,correct,payout};
@@ -1242,7 +1244,7 @@ async function settleMatch(m){
     if (pAmt) { penalties[u] = pAmt; indv[u] = (indv[u]||0) - pAmt; }
   });
   const anyWin=wnrs.length>0||Object.values(wdlDetails).some(d=>d.correct);
-  const s={type:anyWin?'settled':'void',winners:wnrs,losers:losrs,totalPot:wnrs.length>0?losrs.reduce((s,n)=>s+(stakes[n]||defStake),0):0,individual:indv,scoreDetails:scDetails,wdlDetails:wdlDetails,penalties};
+  const s={type:anyWin?'settled':'void',winners:wnrs,losers:losrs,totalPot:wnrs.length>0?losrs.reduce((s,n)=>s+(stakes[n]||defStake),0):0,individual:indv,scoreDetails:scDetails,wdlDetails:wdlDetails,penalties,wdlPredictions:cur.wdlPredictions||{},stakes:cur.stakes||{}};
 
   await ft(SB_URL+'/rest/v1/matches?id=eq.'+m.id,{
     method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
@@ -1330,8 +1332,8 @@ async function loadData(){
     var _sp=await sbGet('predictions','?order=id');if(_sp)_sp.forEach(function(p){var ex=P.findIndex(function(x){return x.match_id===p.match_id&&x.user_name===p.user_name;});if(ex>=0)P[ex]=p;else P.push(p);});
     L = await sbGet('settlement_logs','?order=created_at.desc');
     await loadAvatars();
-    await settleAll();
     syncWDLFromMatches();
+    await settleAll();
     // Create 2 demo settled matches if none exist
     if(!M.some(m=>m.settled)){
       try{
